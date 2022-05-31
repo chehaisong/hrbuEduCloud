@@ -1,7 +1,7 @@
 <template>
-    <div class="addstudent">
+  <div class="addstudent">
     <ul class="title">
-      <router-link to="/edumenus/addstudent" tag="li" >学生管理</router-link>
+      <router-link to="/edumenus/studentmanage" tag="li">学生管理</router-link>
       <li>></li>
       <li>新增学生</li>
     </ul>
@@ -65,12 +65,12 @@
           >
             <el-form-item
               label="姓名"
-              prop="stuname"
+              prop="name"
               :rules="[{ required: true, message: '姓名不能为空' }]"
             >
               <el-input
-                type="stuname"
-                v-model.number="numberValidateForm.stuname"
+                type="name"
+                v-model.number="numberValidateForm.name"
                 autocomplete="off"
               ></el-input>
             </el-form-item>
@@ -143,18 +143,33 @@
           >
             <el-form-item
               label="身份证"
-              prop="indent"
+              prop="idcard"
+              :rules="[
+                { required: true, message: '身份证号不能为空' },
+                { type: 'number', message: '身份证号必须为数字值' },
+              ]"
+            >
+              <el-input
+                type="text"
+                v-model.number="numberValidateForm.idcard"
+                autocomplete="off"
+                maxlength="18"
+              ></el-input>
+            </el-form-item>
+            <!-- <el-form-item
+              label="身份证"
+              prop="idcard"
               :rules="[
                 { required: true, message: '身份证不能为空' },
                 { type: 'number', message: '身份证必须为数字值' },
               ]"
             >
               <el-input
-                type="indent"
-                v-model.number="numberValidateForm.indent"
+                type="idcart"
+                v-model.number="numberValidateForm.idcart"
                 autocomplete="off"
               ></el-input>
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
         </li>
       </ul>
@@ -172,6 +187,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "AddStudent",
   data() {
@@ -292,19 +308,62 @@ export default {
         },
       ],
       gender: "",
-      stuname: "",
+      name: "",
       phone: "",
-      indent: "",
+      idcard: "",
       numberValidateForm: {
         code: "",
-        stuname: "",
+        name: "",
         phone: "",
-        indent: "",
+        idcard: "",
       },
       dynamicValidateForm: {
         email: "",
       },
     };
+  },
+  methods: {
+    handleChange(value) {
+      console.log(value);
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          axios
+            .post("/api/student/addstudent", {
+              code: this.numberValidateForm.code,
+              name: this.numberValidateForm.name,
+              gender: this.gender,
+              email: this.dynamicValidateForm.email,
+              phone: this.numberValidateForm.phone,
+              idcard: this.numberValidateForm.idcard,
+              school: this.value[0],
+              major: this.value[1],
+              studentclass: this.value[2],
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          var second = confirm("提交成功!该学生状态已激活，初始密码为123456，继续输入请点击确认");
+          if (second) {
+            //继续
+            this.$router.push("/edumenus/addstudent");
+          } else {
+            this.$router.push("/edumenus/studentmanage");
+          }
+          // alert("提交成功!该学生状态已激活，初始密码为123456。");
+        } else {
+          alert("信息输入不符合要求！，请重新输入");
+          return false;
+        }
+      });
+    },
+    cancel() {
+      this.$router.push("/edumenus/studentmanage");
+    },
   },
 };
 </script>
@@ -322,7 +381,7 @@ export default {
       line-height: 55px;
       margin-right: 20px;
       &:first-child {
-        color: rgb(66, 162, 235);;
+        color: rgb(66, 162, 235);
         cursor: pointer;
       }
     }
