@@ -1,200 +1,227 @@
 <template>
-  <div class="addteacher">
-    <ul class="title">
-      <router-link to="/edumenus/teachermanage" tag="li">教师管理</router-link>
-      <li>></li>
-      <li>新增教师</li>
-    </ul>
+  <div class="teachadd">
+    <div class="title">
+      <router-link to="/edumenus/teachermanage" tag="span" class="teachmanage"
+        >教师管理</router-link
+      >
+      <span>></span>
+      <span>新增教师</span>
+    </div>
     <div class="content">
       <p>基本信息</p>
-      <ul class="stuwrite">
-        <li class="block">
-          <span>所属院校</span>
-          <el-cascader
-            v-model="value"
-            :options="options"
-            @change="handleChange"
-          ></el-cascader>
-        </li>
-        <li class="block">
-          <span class="demonstration">所属专业</span>
-          <el-cascader
-            v-model="value"
-            :options="options"
-            @change="handleChange"
-          ></el-cascader>
-        </li>
-        <li class="jia">
-          <span class="demonstration">所属班级</span>
-          <el-cascader
-            v-model="value"
-            :options="options"
-            :props="{ expandTrigger: 'hover' }"
-            @change="handleChange"
-          ></el-cascader>
-        </li>
-        <li>
-          <el-form
-            :model="numberValidateForm"
-            ref="numberValidateForm"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
-            <el-form-item
-              label="班级名称"
-              prop="classname"
-              :rules="[
-                { required: true, message: '班级名称不能为空' },
-                { type: 'text', },
-              ]"
-            >
-              <el-input
-                type="classname"
-                v-model.number="numberValidateForm.classname"
-                autocomplete="off"
-              ></el-input>
-            </el-form-item>
-          </el-form>
-        </li>
-      </ul>
-    </div>
-    <div class="commit">
-      <el-button
-        type="primary"
-        size="small"
-        @click="submitForm('numberValidateForm', 'dynamicValidateForm')"
-        >提交</el-button
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+        hide-required-asterisk
       >
-      <el-button size="small" @click="cancel">取消</el-button>
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="ruleForm.username"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="ruleForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="所属学校" prop="school">
+          <el-select v-model="ruleForm.school" placeholder="请选择所属院校">
+            <el-option label="哈尔滨学院" value="哈尔滨学院"></el-option>
+            <el-option label="青岛大学" value="青岛大学"></el-option>
+            <el-option label="四川大学" value="四川大学"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属专业" prop="major">
+          <el-select v-model="ruleForm.major" placeholder="请选择所属专业">
+            <el-option label="计算机" value="计算机"></el-option>
+            <el-option label="软件工程" value="软件工程"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="教授班级" prop="class">
+          <el-input v-model="ruleForm.class"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" prop="gender">
+          <el-select v-model="ruleForm.gender" placeholder="请选择性别">
+            <el-option label="男" value="1"></el-option>
+            <el-option label="女" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="ruleForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input type="text" v-model="ruleForm.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="个人介绍" prop="introdution">
+          <el-input type="textarea" v-model="ruleForm.introdution"></el-input>
+        </el-form-item>
+      </el-form>
     </div>
+    <el-form>
+      <el-form-item class="submit">
+        <el-button
+          type="primary"
+          size="small"
+          @click="submitForm('ruleForm', ruleForm)"
+          >保存</el-button
+        >
+        <el-button @click="resetForm('ruleForm', ruleForm)" size="small"
+          >取消</el-button
+        >
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
-    name:"AddClass",
-    data() {
+  name: "TeachAdd",
+  data() {
+    //3.配置自定义规则
+    let validatePhone = (rule, value, callback) => {
+      console.log(value);
+      if (!value) {
+        callback(new Error("请填写手机号！"));
+      }
+      //使用正则表达式进行验证手机号码
+      if (!/^1[3456789]\d{9}$/.test(value)) {
+        callback(new Error("手机号不正确！"));
+      }
+      callback();
+    };
     return {
-      value: [],
-      options: [
-        {
-          value: "哈尔滨学院",
-          label: "哈尔滨学院",
-          children: [
-            {
-              value: "计算机",
-              label: "计算机",
-            },
-            {
-              value: "软件工程",
-              label: "软件工程",
-            },
-          ],
-        },
-        {
-          value: "清华大学",
-          label: "清华大学",
-          children: [
-            {
-              value: "计算机",
-              label: "计算机",
-            },
-            {
-              value: "软件工程",
-              label: "软件工程",
-            },
-          ],
-        },
-        {
-          value: "北京大学",
-          label: "北京大学",
-          children: [
-            {
-              value: "计算机",
-              label: "计算机",
-            },
-            {
-              value: "软件工程",
-              label: "软件工程",
-            },
-          ],
-        },
-      ],
-      classname: "",
-      numberValidateForm: {
-        classname: "",
+      ruleForm: {
+        username: "",
+        name: "",
+        gender: "",
+        email: "",
+        class: "",
+        school: "",
+        major: "",
+        phone: "",
+        introduction: "",
+      },
+      rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+        ],
+        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+        school: [{ required: true, message: "请选择院校", trigger: "change" }],
+        major: [{ required: true, message: "请选择专业", trigger: "change" }],
+        gender: [{ required: true, message: "请选择性别", trigger: "change" }],
+        class: [
+          { required: true, message: "请输入班级名称", trigger: "blur" },
+        ],
+        email: [
+          { required: true, message: "请输入邮箱地址", trigger: "blur" },
+          {
+            type: "email",
+            message: "请输入正确的邮箱地址",
+            trigger: ["blur", "change"],
+          },
+        ],
+        introdution: [
+          { required: true, message: "请填写个人简介", trigger: "blur" },
+        ],
+        //2.自定义验证规则
+        phone: [{ validator: validatePhone, trigger: "blur" }],
       },
     };
   },
-}
+  methods: {
+    // 校验填写信息并新增教师
+    submitForm(formName, ruleForm) {
+      // console.log(formName),
+      console.log(ruleForm.username),
+      console.log(ruleForm.name),
+      console.log(ruleForm.phone),
+      console.log(ruleForm.school),
+      console.log(ruleForm.email),
+      console.log(ruleForm.major),
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios
+              .post("/api/teacher/addteach", {
+                username: ruleForm.username,
+                name: ruleForm.name,
+                school: ruleForm.school,
+                major: ruleForm.major,
+                class: ruleForm.class,
+                gender: ruleForm.gender,
+                email: ruleForm.email,
+                phone: ruleForm.phone,
+                introduction: ruleForm.introduction
+              })
+              .then((response) => {
+                // console.log(data)
+                console.log(response);
+                this.$message({
+                  message: "新增教师成功",
+                  type: "success",
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            this.$message.error("信息填写不符合要求，新增教师失败");
+            return false;
+          }
+        });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+
+  },
+};
 </script>
 
 <style lang="less" scoped>
-.addteacher {
+.teachadd {
   width: 100%;
   margin-left: 20px;
   .title {
-    display: flex;
-    height: 55px;
-    li {
+    span {
+      margin-right: 10px;
       font-size: 16px;
       color: #7a7f85;
       line-height: 55px;
-      margin-right: 20px;
-      &:first-child {
-        color: rgb(66, 162, 235);
-        cursor: pointer;
-      }
+    }
+    .teachmanage {
+      color: #2b96e5;
     }
   }
   .content {
     width: 980px;
+    // height: 810px;
     background-color: #fff;
     border-radius: 6px;
-    padding-top: 30px;
+    padding: 20px 0 25px 0;
     p {
       font-weight: 700;
       font-size: 16px;
       color: #262c32;
+      margin-bottom: 30px;
       margin-left: 35px;
-      border-left: 4px solid rgb(66, 162, 235);
+      border-left: 4px solid rgba(43, 150, 229, 1);
       padding-left: 15px;
     }
-    .stuwrite {
-      display: flex;
-      flex-direction: column;
-      margin-left: 30px;
-      /deep/ .el-input__inner {
-        width: 300px;
-      }
-      span {
-        width: 100px;
-        text-align: right;
-        margin-right: 15px;
-        font-size: 14px;
-        color: #606266;
-        line-height: 40px;
-        margin-left: 29px;
-      }
-      .jia {
-        margin-bottom: 20px;
-      }
-      li {
-        &:last-child {
-          margin-bottom: 25px;
-        }
-      }
-      .el-cascader {
-        margin-top: 28px;
-      }
-      .gender {
-        margin-left: 57px;
-      }
+    .el-form {
+      margin-left: 45px;
+    }
+    /deep/ .el-input__inner {
+      width: 300px;
+      margin-bottom: 10px;
+    }
+    /deep/ .el-textarea__inner {
+      width: 450px;
     }
   }
-  .commit {
-    margin-top: 45px;
+  .submit {
     text-align: center;
+    margin: 35px 0 35px 0;
     .el-button {
       width: 120px;
       margin-right: 40px;
