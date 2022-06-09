@@ -51,7 +51,7 @@
         </el-date-picker>
         <span class="ml20">关键字</span>
         <el-input
-          placeholder="请输入内容"
+          placeholder="请输入用户名"
           v-model="searchInput"
           size="medium"
           clearable
@@ -64,18 +64,34 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        @cell-dblclick="userCheck"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="60"> </el-table-column>
         <el-table-column
           prop="username"
           label="用户名"
-          width="120"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="name"
+          label="姓名"
+          width="80"
         ></el-table-column>
         <el-table-column
           prop="gender"
           label="性别"
-          width="120"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          prop="position"
+          label="职位"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="role"
+          label="角色"
+          width="100"
         ></el-table-column>
         <el-table-column
           prop="email"
@@ -86,12 +102,12 @@
         <el-table-column
           prop="state"
           label="状态"
-          width="120"
+          width="100"
         ></el-table-column>
         <el-table-column
           prop="ts"
           label="创建时间"
-          width="200"
+          width="170"
         ></el-table-column>
       </el-table>
     </div>
@@ -166,28 +182,15 @@ export default {
       axios
         .get("/api/user/userinfo", obj)
         .then((response) => {
-          console.log(response);
+          console.log(response);         
           this.tableData = response.data.data.results;
           this.total = response.data.data.total;
-
-          // this.tableData.map((item) => {
-          //   //格式化时间
-          //   item.ts = this.FormatTime(item.ts, "");
-          //   item.gender = item.gender == 1 ? "男" : "女";
-          //   item.state = item.state == 1 ? "有效" : "禁用";
-          // });
         })
         .catch((error) => {
           console.log(error);
         });
     },
     handleSelectionChange(val) {
-      // 获取选中的用户邮箱 []
-      // this.emailList = [];
-      // val.forEach((item) => {
-      //   this.emailList.push(item.email);
-      // })
-      // console.log(this.emailList);
       this.multipleSelection = val;
     },
     handleSizeChange(val) {
@@ -273,7 +276,7 @@ export default {
           console.log(error);
         });
     },
-
+    //搜索功能
     search() {
       const data = {};
       if (this.userState == 1 || this.userState == 0) {
@@ -294,6 +297,15 @@ export default {
 
       this.getUserInfo(data);
     },
+    // 跳转到查看用户信息页面
+    userCheck(val){
+      console.log("val",val);
+      this.multipleSelection = val;
+      this.$router.push({
+        name:"UserCheck",
+        query:{...this.multipleSelection},
+      });
+    }
   },
 };
 </script>
@@ -344,6 +356,7 @@ export default {
       /deep/ .el-table__cell {
         padding: 6px 0;
         border-left: 1px solid #ebeef5;
+        text-align: center;
         &:last-child {
           border-right: 1px solid #ebeef5;
         }
