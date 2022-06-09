@@ -5,18 +5,23 @@
       <EduSideMenus />
       <router-view></router-view>
     </div>
+    <div>
+      <Footer />
+    </div>
   </div>
 </template>
 
 <script>
 import AdminHeader from "../components/AdminHeader";
 import EduSideMenus from "../components/EduSidemenus"
+import Footer from "../components/Footer";
 
 export default {
   name: "EduMenus",
   components: {
     AdminHeader,
     EduSideMenus,
+    Footer
   },
 };
 </script>
