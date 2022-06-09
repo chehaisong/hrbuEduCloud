@@ -2,7 +2,8 @@
   <div class="studentmanage">
     <p>学生管理</p>
     <el-row>
-      <router-link to="/menus/addstu" tag="span">
+      <router-link to="/edumenus/addstudent" tag="span">
+      <!-- <router-link to="/edumenus/studentmanage/addstudent" tag="span"> -->
         <el-button type="primary" size="medium">新增学生*</el-button>
       </router-link>
       <!-- <router-view></router-view> -->
@@ -64,8 +65,8 @@
         </el-select>
         <span class="ml20">关键字</span>
         <el-input
-          placeholder="请输入内容"
-          v-model="input"
+          placeholder="请输入学生学籍号"
+          v-model="searchInput"
           size="medium"
           clearable
         >
@@ -77,19 +78,20 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        @cell-dblclick="studentCheck"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="60"> </el-table-column>
-        <el-table-column prop="id" label="序号" width="50"> </el-table-column>
+        <el-table-column type="selection" width="50"> </el-table-column>
+        <el-table-column prop="num" label="序号" width="50"> </el-table-column>
         <el-table-column prop="code" label="学籍号" width="100">
         </el-table-column>
         <el-table-column prop="name" label="学生姓名" width="80">
         </el-table-column>
         <el-table-column prop="gender" label="性别" width="50">
         </el-table-column>
-        <el-table-column prop="class" label="班级" width="150">
+        <el-table-column prop="studentclass" label="班级" width="150">
         </el-table-column>
-        <el-table-column prop="major" label="专业" width="120">
+        <el-table-column prop="major" label="专业" width="100">
         </el-table-column>
         <el-table-column prop="school" label="学校" width="140">
         </el-table-column>
@@ -147,7 +149,7 @@ export default {
       ],
       studentState: 2,
       major: "",
-      input: "",
+      searchInput: "",
       tableData: [],
       multipleSelection: [],
       currentPage4: 4,
@@ -284,13 +286,24 @@ export default {
       if (this.major) {
         data.major = this.major;
       }
-      if (this.input) {
-        data.input = this.input;
+      if (this.searchInput) {
+        data.searchInput = this.searchInput;
       }
     console.log(data);
     this.getStudentInfo(data);
+    },
+    // 跳转到查看学生信息页面
+    studentCheck(val){
+      console.log("val",val);
+      this.multipleSelection = val;
+      this.$router.push({
+        name:"StudentCheck",
+        query:{...this.multipleSelection},
+      });
     }
   },
+
+  
 };
 </script>
 
