@@ -10,16 +10,16 @@
       <router-link to="/edumenus/studentmanage" tag="li" active-class="active"> 教务管理 </router-link>
       <li>资源库</li>
       <li>教研管理</li>
-      <li>教学管理</li>
-      <li>教学管理</li>
+      <router-link to="/teachmenus/courserelease" tag="li" active-class="active"> 教学管理 </router-link>
       <li>考试测评</li>
     </ul>
     <ul class="unlogin">
-      <li>管理员</li>
+      <router-link to="/admincentermenus/admincenter" tag="li" active-class="active"> 管理员 </router-link>
+      <!-- <li>管理员</li> -->
       <li>|</li>
       <li>帮助</li>
       <li>|</li>
-      <li>退出</li>
+      <li @click="logout">退出</li>
     </ul>
   </div>
 </template>
@@ -27,6 +27,11 @@
 <script>
 export default {
   name: "MyHeader",
+  methods:{
+    logout(){
+      this.$router.push("/");
+    }
+  }
 };
 </script>
 
