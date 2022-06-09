@@ -1,130 +1,172 @@
 <template>
-  <div class="addclass">
-    <ul class="title">
-      <router-link to="/edumenus/classmanage" tag="li">班级管理</router-link>
-      <li>></li>
-      <li>新增班级</li>
-    </ul>
+   <div class="addclass">
+    <div class="title">
+      <router-link to="/edumenus/classmanage" tag="span" class="classmanage"
+        >班级管理</router-link
+      >
+      <span>></span>
+      <span>新增班级</span>
+    </div>
     <div class="content">
       <p>基本信息</p>
-      <ul class="stuwrite">
-        <li class="block">
-          <span>所属院校</span>
-          <el-cascader
-            v-model="value"
-            :options="options"
-            @change="handleChange"
-          ></el-cascader>
-        </li>
-        <li class="block">
-          <span class="demonstration">所属专业</span>
-          <el-cascader
-            v-model="value"
-            :options="options"
-            @change="handleChange"
-          ></el-cascader>
-        </li>
-        <li class="jia">
-          <span class="demonstration">所属班级</span>
-          <el-cascader
-            v-model="value"
-            :options="options"
-            :props="{ expandTrigger: 'hover' }"
-            @change="handleChange"
-          ></el-cascader>
-        </li>
-        <li>
-          <el-form
-            :model="numberValidateForm"
-            ref="numberValidateForm"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
-            <el-form-item
-              label="班级名称"
-              prop="classname"
-              :rules="[
-                { required: true, message: '班级名称不能为空' },
-                { type: 'text', },
-              ]"
-            >
-              <el-input
-                type="classname"
-                v-model.number="numberValidateForm.classname"
-                autocomplete="off"
-              ></el-input>
-            </el-form-item>
-          </el-form>
-        </li>
-      </ul>
-    </div>
-    <div class="commit">
-      <el-button
-        type="primary"
-        size="small"
-        @click="submitForm('numberValidateForm', 'dynamicValidateForm')"
-        >提交</el-button
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
       >
-      <el-button size="small" @click="cancel">取消</el-button>
-    </div>
+        <el-form-item label="所属学校" prop="school">
+          <el-select v-model="ruleForm.school" placeholder="请选择所属院校">
+            <el-option label="哈尔滨学院" value="哈尔滨学院"></el-option>
+            <el-option label="青岛大学" value="青岛大学"></el-option>
+            <el-option label="四川大学" value="四川大学"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属专业" prop="major">
+          <el-select v-model="ruleForm.major" placeholder="请选择所属专业">
+            <el-option label="计算机" value="计算机"></el-option>
+            <el-option label="软件工程" value="软件工程"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="办学层级" prop="level">
+          <el-select v-model="ruleForm.level" placeholder="请选择活动区域">
+            <el-option label="本科" value="1"></el-option>
+            <el-option label="高职" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="班级" prop="classname">
+          <el-input v-model="ruleForm.classname"></el-input>
+        </el-form-item>
+      </el-form>
+        </div>
+        <el-form>
+        <el-form-item class="submit">
+          <el-button type="primary" size="small" @click="submitForm('ruleForm',ruleForm)"
+            >保存</el-button
+          >
+          <el-button @click="resetForm('ruleForm',ruleForm)" size="small">取消</el-button>
+        </el-form-item>
+      </el-form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
     name:"AddClass",
     data() {
     return {
-      value: [],
-      options: [
-        {
-          value: "哈尔滨学院",
-          label: "哈尔滨学院",
-          children: [
-            {
-              value: "计算机",
-              label: "计算机",
-            },
-            {
-              value: "软件工程",
-              label: "软件工程",
-            },
-          ],
-        },
-        {
-          value: "清华大学",
-          label: "清华大学",
-          children: [
-            {
-              value: "计算机",
-              label: "计算机",
-            },
-            {
-              value: "软件工程",
-              label: "软件工程",
-            },
-          ],
-        },
-        {
-          value: "北京大学",
-          label: "北京大学",
-          children: [
-            {
-              value: "计算机",
-              label: "计算机",
-            },
-            {
-              value: "软件工程",
-              label: "软件工程",
-            },
-          ],
-        },
-      ],
-      classname: "",
-      numberValidateForm: {
+        value: [],
+        options: [
+          {
+            value: "哈尔滨学院",
+            label: "哈尔滨学院",
+            children: [
+              {
+                value: "计算机",
+                label: "计算机",
+              },
+              {
+                value: "软件工程",
+                label: "软件工程",
+              },
+            ],
+          },
+          {
+            value: "四川大学",
+            label: "四川大学",
+            children: [
+              {
+                value: "计算机",
+                label: "计算机",
+              },
+              {
+                value: "软件工程",
+                label: "软件工程",
+              },
+            ],
+          },
+          {
+            value: "青岛大学",
+            label: "青岛大学",
+            children: [
+              {
+                value: "计算机",
+                label: "计算机",
+              },
+              {
+                value: "软件工程",
+                label: "软件工程",
+              },
+            ],
+          },
+        ],
+      ruleForm: {
         classname: "",
+        school: "",
+        major: "",
+        level:"",
+        value:[],
+      },
+      rules: {
+        classname: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
+        school: [
+          { required: true, message: "请选择院校", trigger: "change" },
+        ],
+        major: [
+          { required: true, message: "请选择专业", trigger: "change" },
+        ],
+        level: [
+          { required: true, message: "请选择办学层级", trigger: "change" },
+        ],
       },
     };
+  
+  },
+    methods: {
+    handleChange(value) {
+      console.log(value);
+    },
+    // 校验填写信息并新增班级
+    submitForm(formName,ruleForm) {
+      // console.log(formName),
+      console.log(ruleForm.classname),
+      console.log(ruleForm.level),
+      console.log(ruleForm.school),
+      console.log(ruleForm.major),
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$message({
+          message: '新增班级成功',
+          type: 'success',
+          
+        });
+        axios
+            .post("/api/classmanage/addclass", {
+              classname: this.ruleForm.classname,
+              school: ruleForm.school,
+              major: ruleForm.major,
+              level: ruleForm.level
+            })
+            .then((response) => {
+              // console.log(data)
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          this.$message.error('信息填写不合格，新增班级失败');
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+    addClass(){
+    }
   },
 }
 </script>
@@ -134,67 +176,42 @@ export default {
   width: 100%;
   margin-left: 20px;
   .title {
-    display: flex;
-    height: 55px;
-    li {
+    span {
+      margin-right: 10px;
       font-size: 16px;
       color: #7a7f85;
       line-height: 55px;
-      margin-right: 20px;
-      &:first-child {
-        color: rgb(66, 162, 235);
-        cursor: pointer;
-      }
+    }
+    .classmanage {
+      color: #2b96e5;
     }
   }
-  .content {
+    .content {
     width: 980px;
+    // height: 810px;
     background-color: #fff;
     border-radius: 6px;
-    padding-top: 30px;
+    padding: 30px 0 70px 0;
     p {
       font-weight: 700;
       font-size: 16px;
       color: #262c32;
+      margin-bottom: 40px;
       margin-left: 35px;
-      border-left: 4px solid rgb(66, 162, 235);
+      border-left: 4px solid rgba(43, 150, 229, 1);
       padding-left: 15px;
     }
-    .stuwrite {
-      display: flex;
-      flex-direction: column;
-      margin-left: 30px;
-      /deep/ .el-input__inner {
+    .el-form{
+      margin-left: 45px;
+    }
+    /deep/ .el-input__inner {
         width: 300px;
-      }
-      span {
-        width: 100px;
-        text-align: right;
-        margin-right: 15px;
-        font-size: 14px;
-        color: #606266;
-        line-height: 40px;
-        margin-left: 29px;
-      }
-      .jia {
-        margin-bottom: 20px;
-      }
-      li {
-        &:last-child {
-          margin-bottom: 25px;
-        }
-      }
-      .el-cascader {
-        margin-top: 28px;
-      }
-      .gender {
-        margin-left: 57px;
+        margin-bottom: 10px;
       }
     }
-  }
-  .commit {
-    margin-top: 45px;
+  .submit{
     text-align: center;
+    margin-top:125px;
     .el-button {
       width: 120px;
       margin-right: 40px;
