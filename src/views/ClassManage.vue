@@ -2,7 +2,7 @@
   <div class="classmanage">
     <p>班级管理</p>
     <el-row>
-      <router-link to="/menus/addstu" tag="span">
+      <router-link to="/edumenus/addclass" tag="span">
         <el-button type="primary" size="medium">新增班级*</el-button>
       </router-link>
       <!-- <router-view></router-view> -->
@@ -57,7 +57,7 @@
         </el-select>
         <span class="ml20">关键字</span>
         <el-input
-          placeholder="请输入内容"
+          placeholder="请输入班级名称"
           v-model="searchInput"
           size="medium"
           clearable
@@ -70,10 +70,11 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        @cell-dblclick="classCheck"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="60"> </el-table-column>
-        <el-table-column prop="id" label="序号" width="50"> </el-table-column>
+        <el-table-column prop="num" label="序号" width="50"> </el-table-column>
         <el-table-column prop="classname" label="班级名称" width="200">
         </el-table-column>
         <el-table-column prop="school" label="学校" width="200">
@@ -186,32 +187,34 @@ export default {
       this.search();
     },
 
-    // 禁用账户
-    disable(state) {
-      const userIdArr = [];
+  //禁用功能
+     disable(state) {
+      const classIdArr = [];
       this.multipleSelection.forEach((item) => {
         console.log(item);
-        // 如果用户禁用则不向后台发送对应用户数据
+        // 如果班级禁用则不向后台发送对应班级数据
         if (item.state === "激活" && !state) {
-          userIdArr.push(item.id);
+          classIdArr.push(item.id);
+          console.log(classIdArr)
         } else if (item.state === "结课" && state) {
-          userIdArr.push(item.id);
+          classIdArr.push(item.id);
+          console.log(classIdArr)
         }
       });
       axios
         .post("/api/classmanage/disableOractivatedUser", {
-          userIds: userIdArr,
+          classIds: classIdArr,
           state,
         })
         .then((response) => {
           const msg = {
-            // message: '禁用/激活班级成功',
+            // message: '禁用/激活用户成功',
             type: "success",
           };
           if (!state) {
-            msg.message = "班级结课成功";
+            msg.message = "禁用用户成功";
           } else {
-            msg.message = "班级激活成功";
+            msg.message = "激活用户成功";
           }
           this.$message(msg);
           this.search();
@@ -221,6 +224,7 @@ export default {
           console.log(error);
         });
     },
+
     // 搜索功能
     search(){
     const data = {};
@@ -231,12 +235,21 @@ export default {
       if (this.major) {
         data.major = this.major;
       }
-      if (this.input) {
-        data.input = this.input;
+      if (this.searchInput) {
+        data.searchInput = this.searchInput;
       }
     console.log(data);
     this.getClassInfo(data);
-    }
+    },
+    
+    //跳转到到查看班级信息页面
+    classCheck(val) {
+      this.multipleSelection = val;
+      this.$router.push({
+        name: "ClassCheck",
+        query: { ...this.multipleSelection },
+      });
+    },
   },
 };
   
