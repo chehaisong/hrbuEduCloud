@@ -2,7 +2,9 @@
   <div class="teachermanage">
     <p>教师管理</p>
      <el-row>
+       <router-link to="/edumenus/addteacher" tag="span">
       <el-button type="primary" size="medium">新增教师*</el-button>
+       </router-link>
       <el-button
         @click="resetPassword"
         size="medium"
@@ -51,7 +53,7 @@
         </el-date-picker>
         <span class="ml20">关键字</span>
         <el-input
-          placeholder="请输入内容"
+          placeholder="请输入用户名"
           v-model="searchInput"
           size="medium"
           clearable
@@ -64,6 +66,7 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        @cell-dblclick="teachCheck"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="60"> </el-table-column>
@@ -248,8 +251,10 @@ export default {
         // 如果用户禁用则不向后台发送对应用户数据
         if (item.state === "有效" && !state) {
           userIdArr.push(item.id);
+          // console.log(userIdArr)
         } else if (item.state === "禁用" && state) {
           userIdArr.push(item.id);
+          // console.log(userIdArr)
         }
       });
       axios
@@ -275,7 +280,7 @@ export default {
           console.log(error);
         });
     },
-
+  //模糊搜索信息
     search() {
       const data = {};
       if (this.userState == 1 || this.userState == 0) {
@@ -290,7 +295,17 @@ export default {
       }
       this.getUserInfo(data);
     },
-}
+     // 跳转到查看教师信息页面
+    teachCheck(val){
+      console.log("val",val);
+      this.multipleSelection = val;
+      this.$router.push({
+        name:"TeacherCheck",
+        query:{...this.multipleSelection},
+      });
+    }
+  },
+
 }
 </script>
 
